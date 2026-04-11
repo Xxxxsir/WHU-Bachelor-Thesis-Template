@@ -1,0 +1,121 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\@writefile{toc}{\contentsline {chapter}{\numberline { 4\hspace  {.3em}}实验评估与结论}{19}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\addvspace {10.0pt}}
+\@writefile{lot}{\addvspace {10.0pt}}
+\@writefile{loa}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}实验设置}{19}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.1}数据集}{19}{subsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.2}目标大语言模型}{19}{subsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.3}评估的后门攻击}{19}{subsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.4}基线防御方法}{20}{subsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.5}评估指标}{20}{subsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1.6}触发器类型}{20}{subsection.4.1.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces 后门向量训练所用触发器类型}}{21}{table.caption.10}\protected@file@percent }
+\newlabel{tab:triggers}{{4.1}{21}{后门向量训练所用触发器类型}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}分类任务主要实验结果}{21}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}生成任务主要实验结果}{21}{section.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces 分类任务实验结果（Llama3-8B）。ASR越低越好，CDA越高越好，最优值加粗。}}{22}{table.caption.11}\protected@file@percent }
+\newlabel{tab:cls_llama}{{4.2}{22}{分类任务实验结果（Llama3-8B）。ASR越低越好，CDA越高越好，最优值加粗。}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.3}{\ignorespaces 分类任务实验结果（Mistral-7B）。ASR越低越好，CDA越高越好，最优值加粗。}}{23}{table.caption.12}\protected@file@percent }
+\newlabel{tab:cls_mistral}{{4.3}{23}{分类任务实验结果（Mistral-7B）。ASR越低越好，CDA越高越好，最优值加粗。}{table.caption.12}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.4}{\ignorespaces 生成任务实验结果。}}{24}{table.caption.13}\protected@file@percent }
+\newlabel{tab:gen}{{4.4}{24}{生成任务实验结果。}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}消融实验}{24}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}良性向量移除的重要性}{24}{subsection.4.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.5}{\ignorespaces 后门向量构建策略对净化性能的影响（Llama3-8B）。}}{24}{table.caption.14}\protected@file@percent }
+\newlabel{tab:ablation_vec}{{4.5}{24}{后门向量构建策略对净化性能的影响（Llama3-8B）。}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}聚合方法的影响}{24}{subsection.4.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.6}{\ignorespaces 聚合方法对后门净化性能的影响。}}{25}{table.caption.15}\protected@file@percent }
+\newlabel{tab:ablation_agg}{{4.6}{25}{聚合方法对后门净化性能的影响。}{table.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}边界层选择的影响}{25}{subsection.4.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces 不同边界层选择对净化性能（1-ASR和CDA）的影响。星号标记本文方法自动选择的边界层。}}{25}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:boundary}{{4.1}{25}{不同边界层选择对净化性能（1-ASR和CDA）的影响。星号标记本文方法自动选择的边界层。}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}面向后门防御即服务的分析}{26}{section.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}可复用性}{26}{subsection.4.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}可定制化}{26}{subsection.4.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}可解释性}{26}{subsection.4.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.7}{\ignorespaces 干净模型与受损模型的后门信号分析（均值±标准差）。}}{26}{table.caption.17}\protected@file@percent }
+\newlabel{tab:interpretability}{{4.7}{26}{干净模型与受损模型的后门信号分析（均值±标准差）。}{table.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}运行时高效性}{27}{subsection.4.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}自适应攻击鲁棒性}{27}{section.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}干净模型稳定性}{27}{section.4.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.8}{\ignorespaces ProtoPurify对自适应后门攻击的鲁棒性（Llama3-8B）。}}{28}{table.caption.18}\protected@file@percent }
+\newlabel{tab:adaptive}{{4.8}{28}{ProtoPurify对自适应后门攻击的鲁棒性（Llama3-8B）。}{table.caption.18}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4.9}{\ignorespaces 干净模型性能（CDA）分析。$\Delta $CDA为应用ProtoPurify前后的绝对变化量。}}{28}{table.caption.19}\protected@file@percent }
+\newlabel{tab:clean}{{4.9}{28}{干净模型性能（CDA）分析。$\Delta $CDA为应用ProtoPurify前后的绝对变化量。}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.8}本章小结与全文结论}{28}{section.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.1}本章小结}{28}{subsection.4.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.2}全文结论}{29}{subsection.4.8.2}\protected@file@percent }
+\@setckpt{pages/chapter4}{
+\setcounter{page}{30}
+\setcounter{equation}{2}
+\setcounter{enumi}{4}
+\setcounter{enumii}{0}
+\setcounter{enumiii}{0}
+\setcounter{enumiv}{0}
+\setcounter{footnote}{0}
+\setcounter{mpfootnote}{0}
+\setcounter{part}{0}
+\setcounter{chapter}{4}
+\setcounter{section}{8}
+\setcounter{subsection}{2}
+\setcounter{subsubsection}{0}
+\setcounter{paragraph}{0}
+\setcounter{subparagraph}{0}
+\setcounter{figure}{1}
+\setcounter{table}{9}
+\setcounter{lofdepth}{1}
+\setcounter{lotdepth}{1}
+\setcounter{caption@flags}{2}
+\setcounter{continuedfloat}{0}
+\setcounter{nlinenum}{0}
+\setcounter{LT@tables}{0}
+\setcounter{LT@chunks}{0}
+\setcounter{parentequation}{0}
+\setcounter{endNonectr}{30}
+\setcounter{currNonectr}{0}
+\setcounter{subfigure}{0}
+\setcounter{subtable}{0}
+\setcounter{lstnumber}{1}
+\setcounter{ALC@unique}{0}
+\setcounter{ALC@line}{0}
+\setcounter{ALC@rem}{0}
+\setcounter{ALC@depth}{0}
+\setcounter{AlgoLine}{16}
+\setcounter{algocfline}{4}
+\setcounter{algocfproc}{4}
+\setcounter{algocf}{4}
+\setcounter{float@type}{8}
+\setcounter{currtheoremctr}{0}
+\setcounter{endtheoremctr}{0}
+\setcounter{theorem}{0}
+\setcounter{currdefinitionctr}{0}
+\setcounter{enddefinitionctr}{0}
+\setcounter{definition}{0}
+\setcounter{currlemmactr}{0}
+\setcounter{endlemmactr}{0}
+\setcounter{lemma}{0}
+\setcounter{currcorollaryctr}{0}
+\setcounter{endcorollaryctr}{0}
+\setcounter{corollary}{0}
+\setcounter{currpropositionctr}{0}
+\setcounter{endpropositionctr}{0}
+\setcounter{proposition}{0}
+\setcounter{currexamplectr}{0}
+\setcounter{endexamplectr}{0}
+\setcounter{example}{0}
+\setcounter{currremarkctr}{0}
+\setcounter{endremarkctr}{0}
+\setcounter{remark}{0}
+\setcounter{currproofctr}{0}
+\setcounter{endproofctr}{0}
+\setcounter{proof}{0}
+\setcounter{NAT@ctr}{0}
+\setcounter{section@level}{0}
+\setcounter{Item}{7}
+\setcounter{Hfootnote}{0}
+\setcounter{Hy@AnnotLevel}{0}
+\setcounter{bookmark@seq@number}{78}
+\setcounter{lstlisting}{0}
+}

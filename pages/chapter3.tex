@@ -1,21 +1,283 @@
-% Chapter 3
+% 第三章：ProtoPurify方法
 
-\chapter{引用与链接}
+\chapter{ProtoPurify方法设计}
 
-\section{脚注}
-注释是对论文中特定名词或新名词的注解。注释可用页末注或篇末注的一种。选择页末注的应在注释与正文之间加细线分隔，线宽度为1磅，线的长度不应超过纸张的三分之一宽度。同一页类列出多个注释的，应根据注释的先后顺序编排序号。字体为宋体5号，注释序号以“\circled{1}、\circled{2}”等数字形式标示在被注释词条的右上角。页末或篇末注释条目的序号应按照“\circled{1}、\circled{2}”等数字形式与被注释词条保持一致。示例：这里有个注释\footnote{我是解释注释的}。
+\section{威胁模型}
 
-\section{引用文中小节}\label{sec:ref}
-如引用小节~\ref{sec:ref}
+\subsection{防御方假设}
 
-\section{引用参考文献}
-这是一个参考文献引用的范例\cite{liu2024lips}
+防御方运营一个BDaaS平台，负责对用户提交的可能含有后门的模型$M'$进行净化。防御方具有以下约束：
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{无法访问私有训练数据}：防御方不知晓用于构建后门模型的原始私有训练数据，也无法观察内部训练过程。
+    \item \textbf{无后门先验知识}：防御方不知晓后门触发器的具体形式、被触发器激活的目标输出，也不知晓后门所针对的任务领域（分类或生成）。
+    \item \textbf{允许的操作}：根据已有工作的设定，防御方可以对提交的模型参数进行分析（包括微调、参数运算或在少量干净数据上的评估），并可在与私有训练数据无关的公开或合成数据集上进行辅助训练运行。
+\end{itemize}
 
-还可以采用国际标准的引用方式\rawcite{汪润2018sprd}
+防御方的目标是：中和$M'$中存在的任何后门行为，同时尽量保留干净任务性能。
 
-引用多个文献\cite{liu2024lips,Liang_Liu_Wang_Wu_Li_Zhang_Wang_Yang_2025,汪润2018sprd}
+\subsection{攻击方假设}
 
-文献引用需要配合BibTeX使用，很多工具可以直接生成BibTeX文件（EndNote, NoteExpress, 百度学术，谷歌学术），此处不作介绍。
+攻击方是一个恶意的训练服务提供者，负责将基础模型$M$微调为受损模型$M'$。攻击方对基础模型$M$、训练流程以及可能的私有数据集$D$拥有完全访问权。攻击方可以注入中毒样本或操控训练过程以植入后门，目标是在特定触发器下诱导目标或广泛的不当行为（如分类错误或有毒生成），同时在干净输入上保持高性能以避免被检测。
 
-\section{链接相关}
-模板使用了hyperref处理相关链接，使用\verb|href|可以生成超链接，链接周围的方框在打印时不会出现。可以在cls文件中修改相应的hypersetup项来关闭方框：\verb|\hypersetup{hidelinks}|。如果需要输出网址，可以使用\verb|url|包，示例：\url{https://github.com}。
+攻击方可以采用任意触发器机制，包括单触发器、多触发器或无触发器。本文进一步假设攻击方是自适应的，即攻击方可能预先知晓防御机制的存在，并设计自适应攻击以绕过净化。
+
+\section{方法概述}
+
+\subsection{核心动机}
+
+本文提出的ProtoPurify方法受到以下实证观察的启发：\textbf{不同后门攻击在模型参数空间中往往引发相关的参数变化}。如图~\ref{fig:motivation}所示，来自不同攻击类型和触发器类型的后门向量之间的余弦相似度（B vs B，均值约为0.27--0.52）显著高于后门向量与干净向量之间的余弦相似度（B vs C），这表明不同后门攻击共享某种"原型"参数模式。ProtoPurify正是通过识别和利用这一共享原型来实现跨数据集、跨任务的通用后门净化。
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{\parbox[c][5cm][c]{12cm}{\centering\heiti\zihao{4}（图1：后门向量间余弦相似度分布图，待插入）}}
+    \caption{后门向量之间（B vs B）及后门向量与干净向量之间（B vs C）的余弦相似度分布。后门向量从5种触发器类型和4种不同攻击中提取。}
+    \label{fig:motivation}
+\end{figure}
+
+\subsection{四阶段工作流程}
+
+ProtoPurify由四个主要阶段组成，整体工作流程如图~\ref{fig:overview}所示：
+
+\begin{figure}[htbp]
+    \centering
+    \fbox{\parbox[c][6cm][c]{14cm}{\centering\heiti\zihao{4}（图2：ProtoPurify整体框架图，待插入）}}
+    \caption{ProtoPurify整体框架示意图。阶段一：通过模拟不同后门场景，从干净模型与后门模型的权重差值中提取后门向量；阶段二：将向量聚合为候选原型，并为目标后门模型选择最匹配的原型；阶段三：通过逐层原型对齐检测边界层；阶段四：在候选层中抑制与原型对齐的分量以完成净化。}
+    \label{fig:overview}
+\end{figure}
+
+\begin{itemize}[leftmargin=2em]
+    \item \textbf{阶段一（后门模拟）}：在辅助数据集上模拟多种已知后门场景，通过干净模型与后门模型的参数差值构建后门向量池。
+    \item \textbf{阶段二（原型构建）}：对向量池中的向量进行聚合，构建候选原型，并为目标后门模型选择最匹配的原型。
+    \item \textbf{阶段三（边界层检测）}：通过逐层计算与原型的对齐分数，识别后门行为集中编码的边界层。
+    \item \textbf{阶段四（模型净化）}：对候选层（边界层及以上各层）中的每个权重矩阵进行奇异值分解，识别并抑制与原型对齐的分量，实现可控净化。
+\end{itemize}
+
+\section{阶段一：后门模拟}
+
+\subsection{目标}
+
+后门模拟阶段的目标是生成多样化的后门模型实例，并构建相应的后门向量池。具体而言，防御方首先收集一组辅助数据集$\mathcal{D}_{\text{aux}} = \{D_i\}_{i=1}^{K_d}$，其中每个$D_i$为公开或合成数据集。结合一组后门攻击方法$\mathcal{A} = \{A_j\}_{j=1}^{K_a}$，构建$N$个模拟后门场景$\mathcal{S} = \{(D^{(i)}, A^{(i)})\}_{i=1}^{N}$，其中$D^{(i)} \in \mathcal{D}_{\text{aux}}$，$A^{(i)} \in \mathcal{A}$。重要的是，$\mathcal{D}_{\text{aux}}$和$\mathcal{A}$不需要包含用于构建目标后门模型的训练数据集或攻击方法。
+
+\subsection{模拟后门模型与干净模型}
+
+对于每个场景$(D^{(i)}, A^{(i)})$，通过以下方式构建两个模型：
+
+\textbf{模拟后门模型}$M_b^{(i)}$：通过在训练过程中引入后门来构建。具体地，按照$A^{(i)}$指定的方式在$D^{(i)}$的部分干净样本中植入触发器，生成中毒训练数据$D_p^{(i)}$，然后在$D^{(i)} \cup D_p^{(i)}$上微调基础模型$M_{\text{base}}$。调整中毒率和训练超参数，使$M_b^{(i)}$在干净验证数据上保持高准确率，同时在含触发器输入上达到接近100\%的攻击成功率（ASR）。
+
+\textbf{模拟干净模型}$M_c^{(i)}$：在辅助干净数据集$D^{(i)}$上以与$M_b^{(i)}$完全相同的超参数和优化配置进行微调，不引入任何触发器或中毒操作，以最小化与后门注入无关的因素的影响。
+
+\subsection{后门向量提取}
+
+获得$M_b^{(i)}$和$M_c^{(i)}$后，分别计算两者相对于基础模型$M_{\text{base}}$的恶意任务向量$v_b^{(i)}$和良性任务向量$v_c^{(i)}$：
+\begin{equation}
+v_b^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}})
+\end{equation}
+\begin{equation}
+v_c^{(i)} = \vartheta_{\mathcal{I}}(M_c^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}})
+\end{equation}
+其中$\vartheta_{\mathcal{I}}(\cdot)$表示提取并展平索引集$\mathcal{I}$所指定参数的函数（$\mathcal{I}$由目标后门模型的微调方案确定，参数未更新的模块被排除在外）。后门向量$v^{(i)}$定义为两者之差：
+\begin{equation}
+v^{(i)} = v_b^{(i)} - v_c^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_c^{(i)})
+\end{equation}
+
+此减法操作的关键作用在于：去除$v_b^{(i)}$中与后门注入无关的任务特定学习信号，使得$v^{(i)}$能够更纯粹地捕获后门引发的权重变化。在多种场景下重复上述过程，得到后门向量池$\mathcal{V} = \{v^{(i)}\}_{i=1}^{N}$。
+
+\subsection{算法描述}
+
+\begin{algorithm}[htbp]
+\caption{后门模拟（阶段一）}
+\label{alg:stage1}
+\KwIn{辅助数据集$\mathcal{D}_{\text{aux}} = \{D_i\}_{i=1}^{K_d}$；攻击集$\mathcal{A} = \{A_j\}_{j=1}^{K_a}$；参数提取算子$\vartheta_{\mathcal{I}}(\cdot)$}
+\KwOut{后门向量池$\mathcal{V}$}
+\KwInit{$\mathcal{V} \leftarrow \emptyset$}\;
+构建模拟场景集合$\mathcal{S} = \{(D^{(i)}, A^{(i)})\}_{i=1}^{N}$\;
+\For{$i = 1$ \emph{\KwTo} $N$}{
+    在$D^{(i)}$上使用攻击$A^{(i)}$训练模拟后门模型$M_b^{(i)}$\;
+    在$D^{(i)}$上以相同设置训练模拟干净模型$M_c^{(i)}$\;
+    $v^{(i)} \leftarrow \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_c^{(i)})$\;
+    $\mathcal{V} \leftarrow \mathcal{V} \cup \{v^{(i)}\}$\;
+}
+\KwRet{$\mathcal{V}$}
+\end{algorithm}
+
+\section{阶段二：原型构建}
+
+\subsection{聚合策略}
+
+给定后门向量池$\mathcal{V} = \{v^{(i)}\}_{i=1}^{N}$，通过聚合操作构建后门原型向量，目标是在捕获共同后门特征的同时抑制场景特定噪声。本文考虑两种代表性聚合函数：
+
+\textbf{算术均值（AM）}：将子集$\mathcal{U}$中所有向量取平均：
+\begin{equation}
+f_{\text{AM}}(\mathcal{U}) = \frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} v
+\end{equation}
+该平均操作强化了跨后门攻击一致的参数变化，同时削减各场景特有的随机变化。
+
+\textbf{主成分分析（PCA）}：对$\mathcal{U}$中的后门向量应用主成分分析，提取最大化方差的主方向$\mathbf{u}_1$，并用后门向量$\ell_2$范数的平均值进行尺度校正：
+\begin{equation}
+f_{\text{PCA}}(\mathcal{U}) = \left(\frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} \|v\|_2\right) \mathbf{u}_1
+\end{equation}
+
+\subsection{原型选择}
+
+本文考虑以数据集为单位的子集$\mathcal{U}_i$，其中$\mathcal{U}_i$包含所有使用数据集$D_i$训练的后门向量，从而构建候选原型集合$\mathcal{P} = \{p_i\}_{i=1}^{K_d}$，其中$p_i = f(\mathcal{U}_i)$。
+
+给定目标后门模型$M'$，计算其相对于基础模型的权重差值向量$\mathbf{w} = \vartheta_{\mathcal{I}}(M') - \vartheta_{\mathcal{I}}(M_{\text{base}})$，然后通过余弦相似度匹配选择最优原型：
+\begin{equation}
+p^* = \arg\max_{p \in \mathcal{P}} \text{CosSim}(\mathbf{w}, p)
+\end{equation}
+所选原型$p^*$将在后续阶段用于净化目标后门模型$M'$。
+
+\subsection{算法描述}
+
+\begin{algorithm}[htbp]
+\caption{原型构建（阶段二）}
+\label{alg:stage2}
+\KwIn{后门向量池$\mathcal{V}$；辅助数据集$\mathcal{D}_{\text{aux}} = \{D_i\}_{i=1}^{K_d}$；聚合函数$f(\cdot)$；基础模型$M_{\text{base}}$；目标模型$M'$}
+\KwOut{匹配的后门原型向量$p^*$}
+\For{$i = 1$ \emph{\KwTo} $K_d$}{
+    $\mathcal{U}_i \leftarrow \{v \in \mathcal{V} \mid v\text{由}D_i\text{构建}\}$\;
+    $p_i \leftarrow f(\mathcal{U}_i)$\tcp*{均值或PCA聚合}
+}
+$\mathcal{P} \leftarrow \{p_i\}_{i=1}^{K_d}$\;
+$\mathbf{w} \leftarrow \vartheta_{\mathcal{I}}(M') - \vartheta_{\mathcal{I}}(M_{\text{base}})$\;
+$p^* \leftarrow \arg\max_{p \in \mathcal{P}} \text{CosSim}(\mathbf{w}, p)$\;
+\KwRet{$p^*$}
+\end{algorithm}
+
+\section{阶段三：边界层检测}
+
+\subsection{动机}
+
+本阶段的目标是识别编码后门行为的模型层，以避免过于激进的净化导致模型效用显著下降。先前的研究表明，大语言模型中的后门行为主要嵌入于中间层，这些层形成高层语义特征和任务特定关联；而较低层则主要捕获词法和句法等基础语言特征，对这些层的过度修改可能降低输出连贯性和模型效用。
+
+基于上述观察，本文引入边界层检测机制，将模型划分为两个区域：边界层以下的层被保护（不参与净化），边界层及以上的层被选为后门净化的候选层。
+
+\subsection{层级对齐分数}
+
+对于目标后门模型，逐层计算权重差值向量$\mathbf{w}$与原型$p^*$的对齐分数：
+\begin{equation}
+s_l = |\text{CosSim}(\mathbf{w}_l, p_l^*)| , \quad l = 1, \ldots, L
+\end{equation}
+其中$\mathbf{w}_l$和$p_l^*$分别表示向量$\mathbf{w}$和$p^*$在第$l$层的分量。经验上，$s_l$在较低层较为稳定，在较深层则出现明显上升的突变，表明后门表示强度的转变。
+
+\subsection{边界层判定准则}
+
+边界层$l^*$须同时满足以下两个显著性准则：
+
+\textbf{幅度显著性（Magnitude Significance）}：对齐分数显著高于较低层建立的稳定基线：
+\begin{equation}
+s_{l^*} \geq \mu_m + \kappa \cdot \sigma_m
+\end{equation}
+其中$\mu_m$和$\sigma_m$分别为最低$m$层对齐分数的均值和标准差，$\kappa$为幅度超参数。
+
+\textbf{增量显著性（Increment Significance）}：对齐分数的增幅显著陡于较低层：
+\begin{equation}
+\Delta s_{l^*} \geq \epsilon \cdot \sigma_m
+\end{equation}
+其中$\Delta s_l = s_l - s_{l-1}$（$l \geq 2$），$\epsilon$为增量超参数。
+
+满足上述两个准则的最小层号即为边界层$l^*$，其上方各层将作为候选层进行净化。
+
+\subsection{算法描述}
+
+\begin{algorithm}[htbp]
+\caption{边界层检测（阶段三）}
+\label{alg:stage3}
+\KwIn{匹配原型向量$p^*$；权重差值向量$\mathbf{w}$；低层数量$m$；超参数$(\kappa, \epsilon)$}
+\KwOut{边界层索引$l^*$}
+按层分解$\mathbf{w} = \{\mathbf{w}_l\}_{l=1}^{L}$，$p^* = \{p_l^*\}_{l=1}^{L}$\;
+\For{$l = 1$ \emph{\KwTo} $L$}{
+    $s_l \leftarrow |\text{CosSim}(\mathbf{w}_l, p_l^*)|$\;
+}
+$\mu_m \leftarrow \text{Mean}(\{s_l\}_{l=1}^{m})$；$\sigma_m \leftarrow \text{Std}(\{s_l\}_{l=1}^{m})$\;
+\For{$l = 2$ \emph{\KwTo} $L$}{
+    $\Delta s_l \leftarrow s_l - s_{l-1}$\;
+}
+$l^* \leftarrow \min\{l : s_l \geq \mu_m + \kappa \sigma_m \wedge \Delta s_l \geq \epsilon \sigma_m\}$\;
+\KwRet{$l^*$}
+\end{algorithm}
+
+\section{阶段四：模型净化}
+
+\subsection{矩阵分解}
+
+给定识别出的原型向量$p^*$和边界层$l^*$，对目标模型$M'$中位于$l \geq l^*$各层的每个可训练权重矩阵$W'$进行净化。首先计算权重更新矩阵：
+\begin{equation}
+\Delta W = W' - W_{\text{base}}
+\end{equation}
+其中$W_{\text{base}}$为基础模型$M_{\text{base}}$中的对应矩阵。将原型向量$p^*$中对应$W'$的条目映射回矩阵空间，得到与$\Delta W$形状相同的原型矩阵$\Delta P$（具体地，对$W'_{i,j}$在$\mathcal{I}$中位置为$z$的条目，$\Delta P_{i,j} = p^*[z]$）。
+
+对$\Delta W$进行奇异值分解（SVD）以解耦其中编码的潜在结构：
+\begin{equation}
+\Delta W = U\Sigma V^\top = \sum_{i=1}^{r} \lambda_i \mathbf{a}_i \mathbf{b}_i^\top
+\end{equation}
+其中$r$为矩阵秩，每个秩-1分量$\mathbf{a}_i\mathbf{b}_i^\top$代表$\Delta W$中的一个独立信息通道。
+
+\subsection{后门信号计算与分量选择}
+
+对每个奇异值分量$\mathbf{a}_i\mathbf{b}_i^\top$，通过将其投影到原型矩阵$\Delta P$来评估其后门信号强度：
+\begin{equation}
+c_i = |\langle \Delta P, \mathbf{a}_i\mathbf{b}_i^\top \rangle_F|
+\end{equation}
+其中$\langle \cdot, \cdot \rangle_F$表示Frobenius内积（等价于$|\text{tr}(\Delta P^\top \mathbf{a}_i\mathbf{b}_i^\top)|$）。分数较高的分量与后门原型高度对齐，被认为与后门行为高度相关。
+
+采用自适应阈值选择与原型对齐的恶意分量：
+\begin{equation}
+\tau = \mu + \eta \cdot \sigma
+\end{equation}
+其中$\mu$和$\sigma$为$\{c_i\}_{i=1}^r$的均值和标准差，$\eta$控制幅度敏感度。分数超过$\tau$的分量被收集到索引集$\mathcal{I}_\tau$。
+
+\subsection{可控后门抑制}
+
+对识别出的恶意分量，通过校准其奇异值进行可控抑制（而非硬性删除）：
+\begin{equation}
+\label{eq:singular_calibrate}
+\lambda_i^* = \begin{cases} \lambda_i \cdot (1 - \alpha), & i \in \mathcal{I}_\tau \\ \lambda_i, & i \notin \mathcal{I}_\tau \end{cases}
+\end{equation}
+其中$\alpha \in [0, 1]$控制净化强度。$\alpha = 1$实现完全消除，较小的值则实现后门抑制与模型效用之间的可控权衡。
+
+校准后，所有分量重新聚合以重建净化后的参数矩阵：
+\begin{equation}
+W^* = W_{\text{base}} + \sum_{i=1}^{r} \lambda_i^* \mathbf{a}_i \mathbf{b}_i^\top
+\end{equation}
+对$l \geq l^*$各层的所有可训练权重矩阵重复上述过程，最终得到净化模型$M^*$。
+
+\subsection{算法描述}
+
+\begin{algorithm}[htbp]
+\caption{模型净化（阶段四）}
+\label{alg:stage4}
+\KwIn{目标模型$M'$；基础模型$M_{\text{base}}$；匹配原型向量$p^*$；边界层$l^*$；净化超参数$(\eta, \alpha)$}
+\KwOut{净化模型$M^*$}
+\KwInit{$M^* \leftarrow M'$}\;
+\ForEach{$l \geq l^*$层的可训练权重矩阵$W'$}{
+    $W_{\text{base}} \leftarrow M_{\text{base}}$中对应矩阵\;
+    $\Delta W \leftarrow W' - W_{\text{base}}$\;
+    $\Delta P \leftarrow$提取$p^*$中与$W'$对应的条目并重塑为矩阵\;
+    对$\Delta W$进行SVD：$\Delta W = \sum_{i=1}^{r} \lambda_i \mathbf{a}_i\mathbf{b}_i^\top$\;
+    \For{$i = 1$ \emph{\KwTo} $r$}{
+        $c_i \leftarrow |\langle \Delta P, \mathbf{a}_i\mathbf{b}_i^\top \rangle_F|$\;
+    }
+    $\mu \leftarrow \text{Mean}(\{c_i\}_{i=1}^r)$；$\sigma \leftarrow \text{Std}(\{c_i\}_{i=1}^r)$；$\tau \leftarrow \mu + \eta\sigma$\;
+    $\mathcal{I}_\tau \leftarrow \{i : c_i \geq \tau\}$\;
+    \For{$i = 1$ \emph{\KwTo} $r$}{
+        \lIf{$i \in \mathcal{I}_\tau$}{$\lambda_i^* \leftarrow \lambda_i(1-\alpha)$}
+        \lElse{$\lambda_i^* \leftarrow \lambda_i$}
+    }
+    $W^* \leftarrow W_{\text{base}} + \sum_{i=1}^{r} \lambda_i^* \mathbf{a}_i\mathbf{b}_i^\top$\;
+    用$W^*$替换$M^*$中的$W'$\;
+}
+\KwRet{$M^*$}
+\end{algorithm}
+
+\section{面向BDaaS的设计优势}
+
+ProtoPurify在设计上原生满足BDaaS场景的四大核心需求：
+
+\textbf{可复用性（Reusability）}：后门向量池在阶段一通过离线模拟一次性构建，可复用于所有提交的共享相同架构的后门模型净化，即使这些模型在不同数据集、任务领域和后门攻击下训练。
+
+\textbf{可定制化（Customizability）}：当防御方拥有关于后门攻击类型或下游任务的部分先验知识时，可以针对性地选择或构建与已知信息对齐的原型，进一步提升净化效果，而无需引入显著的计算开销。
+
+\textbf{可解释性（Interpretability）}：净化过程中识别出的后门信号$c_i$提供了可解释的洞见，揭示了后门更新在被提交模型中的编码位置和方式。通过分析各层及各投影矩阵中的$c_i$分布，可以诊断模型是否被攻击，并对攻击类型进行粗粒度判断。
+
+\textbf{运行时高效性（Runtime Efficiency）}：阶段一的模拟在服务时间之前完成，服务时间的净化流程（阶段二至四）无需任何模型特定的梯度计算或重训练，仅需几次矩阵运算，每个模型的净化时间为5--10分钟，可实现高通量的服务化净化部署。

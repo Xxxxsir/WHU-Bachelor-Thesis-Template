@@ -2,23 +2,46 @@
 
 \appendix
 
-\chapter{数据}
+\chapter{实验补充材料}
 
-\section{第一个测试}
-测试公式编号
-\begin{equation}
-  1+1=2.
-\end{equation}
+\section{实验超参数设置}
 
-表格编号测试
+表~\ref{tab:hyperparams}列出了ProtoPurify在各实验场景中使用的超参数设置。
 
-\begin{table}[h]
-  \centering
-  \caption{测试表格}
-  \begin{tabular}{*{20}c}
-    \hline
-    11 & 13  & 13  & 13  & 13 \\
-    12 & 14  & 13  & 13  & 13 \\
-    \hline
-  \end{tabular}
+\begin{table}[htbp]
+    \centering
+    \caption{ProtoPurify超参数设置}
+    \label{tab:hyperparams}
+    \begin{tabular}{lcc}
+        \toprule
+        超参数 & 含义 & 默认值 \\
+        \midrule
+        $m$ & 用于计算基线统计的低层数量 & 10 \\
+        $\kappa$ & 幅度显著性判定倍数 & 2.0 \\
+        $\epsilon$ & 增量显著性判定倍数 & 1.5 \\
+        $\eta$ & 后门信号选择阈值倍数 & 1.0 \\
+        $\alpha$ & 净化抑制强度 & 0.8 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{辅助数据集详情}
+
+后门向量池构建所使用的辅助数据集均来自GLUE基准，各数据集的基本统计信息如表~\ref{tab:auxdata}所示。
+
+\begin{table}[htbp]
+    \centering
+    \caption{辅助数据集基本统计信息}
+    \label{tab:auxdata}
+    \begin{tabular}{lccc}
+        \toprule
+        数据集 & 任务类型 & 类别数 & 训练样本数 \\
+        \midrule
+        SST-2   & 情感分类 & 2 & 67,349 \\
+        CoLA    & 语法可接受性 & 2 & 8,551 \\
+        QQP     & 释义检测 & 2 & 363,849 \\
+        MNLI    & 自然语言推理 & 3 & 392,702 \\
+        Emotion & 情感识别 & 6 & 16,000 \\
+        \bottomrule
+    \end{tabular}
 \end{table}

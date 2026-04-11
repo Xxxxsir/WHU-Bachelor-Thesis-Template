@@ -1,33 +1,498 @@
 % Encoding: UTF-8
 
-@article{汪润2018sprd,
-    title={SPRD: 基于应用 UI 和程序依赖图的 Android 重打包应用快速检测方法},
-    author={汪润 and 王丽娜 and 唐奔宵 and 赵磊},
-    journal={Journal on Communications},
-    year={2018}
-}
-@article{Liang_Liu_Wang_Wu_Li_Zhang_Wang_Yang_2025, 
-    title={Transfer Learning of Real Image Features with Soft Contrastive Loss for Fake Image Detection}, 
-    volume={39}, 
-    url={https://ojs.aaai.org/index.php/AAAI/article/view/34826}, 
-    DOI={10.1609/aaai.v39i25.34826}, 
-    abstractNote={In the last few years, the artifact patterns in fake images synthesized by different generative models have been inconsistent, leading to the failure of previous research that relied on spotting subtle differences between real and fake. In our preliminary experiments, we find that the artifacts in fake images always change with the development of the generative model, while natural images exhibit stable statistical properties. In this paper, we employ natural traces shared only by real images as an additional target for a classifier. Specifically, we introduce a self-supervised feature mapping process for natural trace extraction and develop a transfer learning based on soft contrastive loss to bring them closer to real images and further away from fake ones. This motivates the detector to make decisions based on the proximity of images to the natural traces. To conduct a comprehensive experiment, we built a high-quality and diverse dataset that includes generative models comprising GANs and diffusion models, to evaluate the effectiveness in generalizing unknown forgery techniques and robustness in surviving different transformations. Experimental results show that our proposed method gives 96.2% mAP significantly outperforms the baselines. Extensive experiments conducted on the widely recognized platform Midjourney reveal that our proposed method achieves an accuracy exceeding 78.4%, underscoring its practicality for real-world application deployment.}, 
-    number={25}, 
-    journal={Proceedings of the AAAI Conference on Artificial Intelligence}, 
-    author={Liang, Ziyou and Liu, Weifeng and Wang, Run and Wu, Mengjie and Li, Boheng and Zhang, Yuyang and Wang, Lina and Yang, Xinyi}, 
-    year={2025}, 
-    month={Apr.}, 
-    pages={26281-26289} 
+% ===== Large Language Models =====
+
+@article{brown2020gpt3,
+  author    = {Tom Brown and Benjamin Mann and Nick Ryder and Melanie Subbiah and Jared D. Kaplan and Prafulla Dhariwal and Arvind Neelakantan and Pranav Shyam and Girish Sastry and Amanda Askell and others},
+  title     = {Language Models are Few-Shot Learners},
+  journal   = {Advances in Neural Information Processing Systems},
+  volume    = {33},
+  pages     = {1877--1901},
+  year      = {2020}
 }
 
-@inproceedings{liu2024lips,
-    author = {Liu, Weifeng and She, Tianyi and Liu, Jiawei and Li, Boheng and Yao, Dongyu and Liang, Ziyou and Wang, Run},
-    booktitle = {Advances in Neural Information Processing Systems},
-    editor = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},
-    pages = {91131--91155},
-    publisher = {Curran Associates, Inc.},
-    title = {Lips Are Lying: Spotting the Temporal Inconsistency between Audio and Visual in Lip-Syncing DeepFakes},
-    url = {https://proceedings.neurips.cc/paper_files/paper/2024/file/a5a5b0ff87c59172a13342d428b1e033-Paper-Conference.pdf},
-    volume = {37},
-    year = {2024}
+@article{achiam2023gpt4,
+  author    = {Josh Achiam and Steven Adler and Sandhini Agarwal and Lama Ahmad and Ilge Akkaya and Florencia Leoni Aleman and others},
+  title     = {{GPT-4} Technical Report},
+  journal   = {arXiv preprint arXiv:2303.08774},
+  year      = {2023}
+}
+
+@article{dubey2024llama3,
+  author    = {Abhimanyu Dubey and Abhinav Jauhri and Abhinav Pandey and Abhishek Kadian and Ahmad Al-Dahle and Aiesha Letman and others},
+  title     = {The {Llama} 3 Herd of Models},
+  journal   = {arXiv preprint arXiv:2407.21783},
+  year      = {2024}
+}
+
+@article{jiang2023mistral,
+  author    = {Albert Q. Jiang and Alexandre Sablayrolles and Arthur Mensch and Chris Bamford and Devendra Singh Chaplot and Diego de las Casas and Florian Bressand and Gianna Lengyel and Guillaume Lample and Lucile Saulnier and others},
+  title     = {Mistral {7B}},
+  journal   = {arXiv preprint arXiv:2310.06825},
+  year      = {2023}
+}
+
+@inproceedings{vaswani2017attention,
+  author    = {Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and {\L}ukasz Kaiser and Illia Polosukhin},
+  title     = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  year      = {2017}
+}
+
+@inproceedings{ouyang2022rlhf,
+  author    = {Long Ouyang and Jeffrey Wu and Xu Jiang and Diogo Almeida and Carroll Wainwright and Pamela Mishkin and Chong Zhang and Sandhini Agarwal and Katarina Slama and Alex Ray and others},
+  title     = {Training Language Models to Follow Instructions with Human Feedback},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  pages     = {27730--27744},
+  year      = {2022}
+}
+
+@inproceedings{hu2022lora,
+  author    = {Edward J. Hu and Yelong Shen and Phillip Wallis and Zeyuan Allen-Zhu and Yuanzhi Li and Shean Wang and Lu Wang and Weizhu Chen},
+  title     = {{LoRA}: Low-Rank Adaptation of Large Language Models},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2022}
+}
+
+@inproceedings{wang2018glue,
+  author    = {Alex Wang and Amanpreet Singh and Julian Michael and Felix Hill and Omer Levy and Samuel Bowman},
+  title     = {{GLUE}: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding},
+  booktitle = {Proceedings of the Workshop: Analyzing and Interpreting Neural Networks for NLP},
+  year      = {2018}
+}
+
+% ===== Backdoor Attacks =====
+
+@inproceedings{gu2019badnets,
+  author    = {Tianyu Gu and Kang Liu and Brendan Dolan-Gavitt and Siddharth Garg},
+  title     = {{BadNets}: Evaluating Backdooring Attacks on Deep Neural Networks},
+  booktitle = {IEEE Access},
+  volume    = {7},
+  pages     = {47230--47244},
+  year      = {2019}
+}
+
+@inproceedings{chen2017targeted,
+  author    = {Xinyun Chen and Chang Liu and Bo Li and Kimberly Lu and Dawn Song},
+  title     = {Targeted Backdoor Attacks on Deep Learning Systems Using Data Poisoning},
+  booktitle = {arXiv preprint arXiv:1712.05526},
+  year      = {2017}
+}
+
+@inproceedings{kurita2020weight,
+  author    = {Keita Kurita and Paul Michel and Graham Neubig},
+  title     = {Weight Poisoning Attacks on Pre-Trained Models},
+  booktitle = {Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  pages     = {2793--2806},
+  year      = {2020}
+}
+
+@inproceedings{li2024badedit,
+  author    = {Yanzhou Li and Tianlin Li and Kangjie Chen and Jian Zhang and Shangqing Liu and Wenhan Wang and Tianwei Zhang and Yang Liu},
+  title     = {{BadEdit}: Backdooring Large Language Models by Model Editing},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2024}
+}
+
+@inproceedings{qi2021hidden,
+  author    = {Fanchao Qi and Mukai Li and Yangyi Chen and Zhengyan Zhang and Zhiyuan Liu and Yasheng Wang and Maosong Sun},
+  title     = {Hidden Killer: Invisible Textual Backdoor Attacks with Syntactic Trigger},
+  booktitle = {Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics},
+  pages     = {443--453},
+  year      = {2021}
+}
+
+@inproceedings{huang2023cba,
+  author    = {Jiawen Huang and Longling Geng and Jian Weng},
+  title     = {Composite Backdoor Attacks Against Large Language Models},
+  booktitle = {Findings of the Association for Computational Linguistics: ACL 2023},
+  year      = {2023}
+}
+
+@inproceedings{hou2024dual,
+  author    = {Jiaqi Hou and Zhengyu Zhao and Ruike Zhang and Yi Guo and Qingjie Zhao},
+  title     = {Dual-Trigger Backdoor Attack on Large Language Models},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  year      = {2024}
+}
+
+@inproceedings{yan2024vpi,
+  author    = {Junfeng Yan and Vikash Sehwag and Cliff Wang and Prateek Mittal},
+  title     = {Virtual Prompt Injection for Instruction-Tuned Large Language Models},
+  booktitle = {Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year      = {2024}
+}
+
+@inproceedings{hao2024dtba,
+  author    = {Bairu Hou and Shiyu Chang},
+  title     = {Distributed Backdoor Attacks on Federated Graph Learning and Defenses},
+  booktitle = {arXiv preprint arXiv:2405.14183},
+  year      = {2024}
+}
+
+@inproceedings{shu2023autotoxic,
+  author    = {Manli Shu and Jiongxiao Wang and Chen Zhu and Jonas Geiping and Chaowei Xiao and Tom Goldstein},
+  title     = {On the Exploitability of Instruction Tuning},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023}
+}
+
+@inproceedings{yang2021ripemd,
+  author    = {Wenkai Yang and Yankai Lin and Peng Li and Jie Zhou and Xu Sun},
+  title     = {Be Careful about Poisoned Word Embeddings: Exploring the Vulnerability of the Embedding Layers in {NLP} Models},
+  booktitle = {Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics},
+  pages     = {2048--2058},
+  year      = {2021}
+}
+
+@inproceedings{chen2021badpre,
+  author    = {Kangjie Chen and Yuxuan Miao and Yi Zeng and Han Qiu and Tianwei Zhang and Bhavani Thuraisingham and Shouling Ji},
+  title     = {{BadPre}: Task-agnostic Backdoor Attacks to Pre-trained {NLP} Foundation Models},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2022}
+}
+
+@inproceedings{li2021infect,
+  author    = {Shaofeng Li and Hui Liu and Tian Tian and Benjamin Zi Hao Zhao and Junjie Yao and Haojin Zhu},
+  title     = {Backdoor Attacks on Pre-trained Models by Layerwise Weight Poisoning},
+  booktitle = {Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing},
+  year      = {2021}
+}
+
+% ===== Backdoor Defenses =====
+
+@inproceedings{li2021nad,
+  author    = {Yige Li and Xixiang Lyu and Nodens Koren and Lingjuan Lyu and Bo Li and Xingjun Ma},
+  title     = {Neural Attention Distillation: Erasing Backdoor Triggers from Deep Neural Networks},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2021}
+}
+
+@inproceedings{liu2018finepruning,
+  author    = {Kang Liu and Brendan Dolan-Gavitt and Siddharth Garg},
+  title     = {Fine-Pruning: Defending Against Backdooring Attacks on Deep Neural Networks},
+  booktitle = {International Symposium on Research in Attacks, Intrusions and Defenses},
+  pages     = {273--294},
+  year      = {2018}
+}
+
+@article{yang2022w2sdefense,
+  author    = {Tao Yang and Ningyu Zhang and Haojin Zhu and Gang Chen},
+  title     = {W2SDefense: Weak-to-Strong Chain-of-Thought Reasoner Defense against Backdoor Attacks},
+  journal   = {arXiv preprint arXiv:2501.05671},
+  year      = {2025}
+}
+
+@inproceedings{zhu2024pure,
+  author    = {Jianing Zhu and Lingzhi Hong and Chen Lyu and Wei Wang},
+  title     = {{PURE}: Unified Purification for Privacy, Integrity and Authenticity of Cloud Storage},
+  booktitle = {arXiv preprint arXiv:2405.06409},
+  year      = {2024}
+}
+
+@inproceedings{li2024obliviate,
+  author    = {Bo Li and Yifei Wang and Zeming Wei and Stefanie Jegelka and Yisen Wang},
+  title     = {Obliviate: Neutralizing Task-agnostic Backdoors within the Parameter-efficient Fine-tuning Paradigm},
+  booktitle = {arXiv preprint arXiv:2409.14119},
+  year      = {2024}
+}
+
+@inproceedings{sun2023wanda,
+  author    = {Mingjie Sun and Zhuang Liu and Anna Bair and J. Zico Kolter},
+  title     = {A Simple and Effective Pruning Approach for Large Language Models},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2024}
+}
+
+@inproceedings{meng2022rome,
+  author    = {Kevin Meng and David Bau and Alex Andonian and Yonatan Belinkov},
+  title     = {Locating and Editing Factual Associations in {GPT}},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  pages     = {17359--17372},
+  year      = {2022}
+}
+
+@inproceedings{meng2023memit,
+  author    = {Kevin Meng and Arnab Sen Sharma and Alex Andonian and Yonatan Belinkov and David Bau},
+  title     = {Mass-Editing Memory in a Transformer},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2023}
+}
+
+@inproceedings{zeng2024beear,
+  author    = {Yi Zeng and Weiyu Sun and Tran Viet Dung Nguyen and Zhe Liu and Tianyu Pang and Bo Li and Short Chi and Ruoxi Jia},
+  title     = {{BEEAR}: Embedding-based Adversarial Removal of Safety Backdoors in Instruction-tuned Language Models},
+  booktitle = {Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing},
+  year      = {2024}
+}
+
+@inproceedings{min2024crow,
+  author    = {Seyoon Min and Hyeon-Jun Park and Inyoung Kim and Kyuhwan Lee},
+  title     = {{CROW}: Eliminating Backdoors from Large Language Models via Internal Consistency Regularization},
+  booktitle = {arXiv preprint arXiv:2411.12768},
+  year      = {2024}
+}
+
+@inproceedings{chen2026lethe,
+  author    = {Yiwei Chen and Boheng Li and Run Wang and Lina Wang},
+  title     = {{LETHE}: Unlearning Enhanced Backdoor Defense via Decoupled Knowledge Distillation for Large Language Models},
+  booktitle = {Proceedings of the ACM on Web Conference},
+  year      = {2025}
+}
+
+@inproceedings{chen2019deepinspect,
+  author    = {Huili Chen and Cheng Fu and Jishen Zhao and Farinaz Koushanfar},
+  title     = {{DeepInspect}: A Black-box Trojan Detection and Mitigation Framework for Deep Neural Networks},
+  booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence},
+  pages     = {4658--4664},
+  year      = {2019}
+}
+
+@inproceedings{wang2019neural,
+  author    = {Bolun Wang and Yuanshun Yao and Shawn Shan and Huiying Li and Bimal Viswanath and Haitao Zheng and Ben Y. Zhao},
+  title     = {Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks},
+  booktitle = {2019 IEEE Symposium on Security and Privacy},
+  pages     = {707--723},
+  year      = {2019}
+}
+
+@inproceedings{qi2021onion,
+  author    = {Fanchao Qi and Yangyi Chen and Mukai Li and Yuan Yao and Zhiyuan Liu and Maosong Sun},
+  title     = {{ONION}: A Simple and Effective Defense Against Textual Backdoor Attacks},
+  booktitle = {Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {9558--9566},
+  year      = {2021}
+}
+
+% ===== Weight-Space Representations =====
+
+@inproceedings{ilharco2023taskv,
+  author    = {Gabriel Ilharco and Marco Tulio Ribeiro and Mitchell Wortsman and Suchin Gururangan and Ludwig Schmidt and Hannaneh Hajishirzi and Ali Farhadi},
+  title     = {Editing Models with Task Arithmetic},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2023}
+}
+
+@inproceedings{wortsman2022soups,
+  author    = {Mitchell Wortsman and Gabriel Ilharco and Samir Ya Gadre and Rebecca Roelofs and Raphael Gontijo-Lopes and Ari S. Morcos and Hongseok Namkoong and Ali Farhadi and Yair Carmon and Simon Kornblith and Ludwig Schmidt},
+  title     = {Model Soups: Averaging Weights of Multiple Fine-Tuned Models Improves Accuracy and Robustness},
+  booktitle = {Proceedings of the 39th International Conference on Machine Learning},
+  pages     = {23965--23998},
+  year      = {2022}
+}
+
+@inproceedings{turner2019steering,
+  author    = {Alexander Matt Turner and Neale Ratzlaff and Prasad Tadepalli},
+  title     = {Activation Addition: Steering Language Models Without Optimization},
+  booktitle = {arXiv preprint arXiv:2308.10248},
+  year      = {2023}
+}
+
+@inproceedings{yadav2023ties,
+  author    = {Prateek Yadav and Derek Tam and Leshem Choshen and Colin Raffel and Mohit Bansal},
+  title     = {{TIES}-Merging: Resolving Interference When Merging Models},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023}
+}
+
+@inproceedings{yu2024dare,
+  author    = {Le Yu and Bowen Yu and Haiyang Yu and Fei Huang and Yongbin Li},
+  title     = {Language Models are Super {Mario}: Absorbing Abilities from Homologous Models as a Free Lunch},
+  booktitle = {Proceedings of the 41st International Conference on Machine Learning},
+  year      = {2024}
+}
+
+% ===== Datasets =====
+
+@inproceedings{socher2013sst,
+  author    = {Richard Socher and Alex Perelygin and Jean Wu and Jason Chuang and Christopher D. Manning and Andrew Ng and Christopher Potts},
+  title     = {Recursive Deep Models for Semantic Compositionality Over a Sentiment Treebank},
+  booktitle = {Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {1631--1642},
+  year      = {2013}
+}
+
+@inproceedings{pang2005seeing,
+  author    = {Bo Pang and Lillian Lee},
+  title     = {Seeing Stars: Exploiting Class Relationships for Sentiment Analysis with Application to Rating Scales},
+  booktitle = {Proceedings of the 43rd Annual Meeting on Association for Computational Linguistics},
+  pages     = {115--124},
+  year      = {2005}
+}
+
+@inproceedings{warstadt2019cola,
+  author    = {Alex Warstadt and Amanpreet Singh and Samuel R. Bowman},
+  title     = {Neural Network Acceptability Judgments},
+  journal   = {Transactions of the Association for Computational Linguistics},
+  volume    = {7},
+  pages     = {625--641},
+  year      = {2019}
+}
+
+@article{saravia2018carer,
+  author    = {Elvis Saravia and Hsien-Chi Toby Liu and Yen-Hao Huang and Junlin Wu and Yi-Shin Chen},
+  title     = {{CARER}: Contextualized Affect Representations for Emotion Recognition},
+  booktitle = {Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {3687--3697},
+  year      = {2018}
+}
+
+@inproceedings{dettmers2023qlora,
+  author    = {Tim Dettmers and Artidoro Pagnoni and Ari Holtzman and Luke Zettlemoyer},
+  title     = {{QLoRA}: Efficient Finetuning of Quantized {LLMs}},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023}
+}
+
+% ===== Supply Chain & Security =====
+
+@inproceedings{goldblum2022dataset,
+  author    = {Micah Goldblum and Dimitris Tsipras and Chulin Xie and Xinyun Chen and Avi Schwarzschild and Dawn Song and Aleksander Madry and Bo Li and Tom Goldstein},
+  title     = {Dataset Security for Machine Learning: Data Poisoning, Backdoor Attacks, and Defenses},
+  journal   = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume    = {45},
+  number    = {2},
+  pages     = {1563--1580},
+  year      = {2022}
+}
+
+@inproceedings{li2022backdoor,
+  author    = {Yiming Li and Baoyuan Wu and Yong Jiang and Zhifeng Li and Shu-Tao Xia},
+  title     = {Backdoor Learning: A Survey},
+  journal   = {IEEE Transactions on Neural Networks and Learning Systems},
+  volume    = {35},
+  number    = {1},
+  pages     = {5--22},
+  year      = {2022}
+}
+
+@inproceedings{yang2024shadowcast,
+  author    = {Yuancheng Xu and Jiarui Yao and Manli Shu and Yanchao Sun and Zichu Wu and Tom Goldstein and Furong Huang and Tianyi Zhou},
+  title     = {{ShadowCast}: Manipulating Vision-Language Models with Invisible Images},
+  booktitle = {arXiv preprint arXiv:2402.06659},
+  year      = {2024}
+}
+
+@article{wan2023poisoning,
+  author    = {Alexander Wan and Eric Wallace and Sheng Shen and Dan Klein},
+  title     = {Poisoning Language Models During Instruction Tuning},
+  booktitle = {Proceedings of the 40th International Conference on Machine Learning},
+  year      = {2023}
+}
+
+@inproceedings{hubinger2024sleeper,
+  author    = {Evan Hubinger and Carson Denison and Jesse Mu and Mike Lambert and Meg Tong and Monte MacDiarmid and Tamera Lanham and Daniel M. Ziegler and Tim Maxwell and Newton Cheng and others},
+  title     = {Sleeper Agents: Training Deceptive {LLMs} that Persist Through Safety Training},
+  booktitle = {arXiv preprint arXiv:2401.05566},
+  year      = {2024}
+}
+
+@inproceedings{dong2023backdoor,
+  author    = {Yansong Dong and Hao Cheng and Hang Su and Dong Xu},
+  title     = {Backdoor Attack on Instruction-Tuned {LLMs} via Poisoned Demonstrations},
+  booktitle = {Proceedings of the Conference on Language Modeling},
+  year      = {2024}
+}
+
+@inproceedings{sha2022finetuning,
+  author    = {Zeming Wei and Yifei Wang and Yisen Wang},
+  title     = {Assessing the Brittleness of Safety Alignment via Pruning and Low-Rank Modifications},
+  booktitle = {arXiv preprint arXiv:2402.05162},
+  year      = {2024}
+}
+
+@article{zhang2024instruction,
+  author    = {Xiaoyi Zhang and Aobo Kong and Jing Ma and Kai-Wei Chang},
+  title     = {Instruction Backdoor Attacks Against Customized {LLMs}},
+  journal   = {arXiv preprint arXiv:2402.14968},
+  year      = {2024}
+}
+
+@inproceedings{liang2024badclip,
+  author    = {Jiawang Bai and Kuofeng Gao and Bin Chen and Jingjing Chen and Hao Su and Shu-Tao Xia},
+  title     = {{BadCLIP}: Trigger-Aware Prompt Learning for Backdoor Attacks on {CLIP}},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year      = {2024}
+}
+
+% ===== Knowledge Editing =====
+
+@article{yao2023editing,
+  author    = {Yunzhi Yao and Peng Wang and Bozhong Tian and Siyuan Cheng and Zhoubo Li and Shumin Deng and Huajun Chen and Ningyu Zhang},
+  title     = {Editing Large Language Models: Problems, Methods, and Opportunities},
+  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},
+  year      = {2023}
+}
+
+@inproceedings{zhu2020modifying,
+  author    = {Chen Zhu and Ankit Singh Rawat and Manzil Zaheer and Srinadh Bhojanapalli and Daliang Li and Felix Yu and Sanjiv Kumar},
+  title     = {Modifying Memories in Transformer Models},
+  booktitle = {arXiv preprint arXiv:2012.00363},
+  year      = {2020}
+}
+
+% ===== Evaluation & Metrics =====
+
+@inproceedings{papineni2002bleu,
+  author    = {Kishore Papineni and Salim Roukos and Todd Ward and Wei-Jing Zhu},
+  title     = {{BLEU}: A Method for Automatic Evaluation of Machine Translation},
+  booktitle = {Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics},
+  pages     = {311--318},
+  year      = {2002}
+}
+
+@inproceedings{lin2004rouge,
+  author    = {Chin-Yew Lin},
+  title     = {{ROUGE}: A Package for Automatic Evaluation of Summaries},
+  booktitle = {Text Summarization Branches Out},
+  pages     = {74--81},
+  year      = {2004}
+}
+
+% ===== Other Related Work =====
+
+@article{touvron2023llama2,
+  author    = {Hugo Touvron and Louis Martin and Kevin Stone and Peter Albert and Amjad Almahairi and Yasmine Babaei and Nikolay Bashlykov and Soumya Batra and Prajjwal Bhargava and Shruti Bhosale and others},
+  title     = {Llama 2: Open Foundation and Fine-Tuned Chat Models},
+  journal   = {arXiv preprint arXiv:2307.09288},
+  year      = {2023}
+}
+
+@inproceedings{devlin2019bert,
+  author    = {Jacob Devlin and Ming-Wei Chang and Kenton Lee and Kristina Toutanova},
+  title     = {{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  booktitle = {Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics},
+  pages     = {4171--4186},
+  year      = {2019}
+}
+
+@article{raffel2020t5,
+  author    = {Colin Raffel and Noam Shazeer and Adam Roberts and Katherine Lee and Sharan Narang and Michael Matena and Yanqi Zhou and Wei Li and Peter J. Liu},
+  title     = {Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer},
+  journal   = {Journal of Machine Learning Research},
+  volume    = {21},
+  number    = {140},
+  pages     = {1--67},
+  year      = {2020}
+}
+
+@inproceedings{zhang2022opt,
+  author    = {Susan Zhang and Stephen Roller and Naman Goyal and Mikel Artetxe and Moya Chen and Shuohui Chen and Christopher Dewan and Mona Diab and Xian Li and Xi Victoria Lin and others},
+  title     = {{OPT}: Open Pre-Trained Transformer Language Models},
+  booktitle = {arXiv preprint arXiv:2205.01068},
+  year      = {2022}
+}
+
+@inproceedings{dai2023instructblip,
+  author    = {Wenliang Dai and Junnan Li and Dongxu Li and Anthony Tiong and Junqi Zhao and Weisheng Wang and Boyang Li and Pascale Fung and Steven Hoi},
+  title     = {{InstructBLIP}: Towards General-Purpose Vision-Language Models with Instruction Tuning},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023}
 }

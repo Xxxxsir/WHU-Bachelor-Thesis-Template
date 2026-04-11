@@ -3,21 +3,27 @@
 \pagenumbering{Roman}
 \addcontentsline{toc}{chapter}{摘\hspace{1em}要}
 
-\begin{cnabstract}{关键词1；关键词2；关键词3}
+\begin{cnabstract}{大语言模型；后门攻击；后门净化；后门防御即服务；原型表示；权重空间}
 
-  请使用中文分号“；”分割关键词！
+大语言模型（LLMs）已被广泛部署于安全敏感型应用场景，但仍面临后门攻击的严重威胁。现有后门防御方法难以在"后门防御即服务"（Backdoor Defense-as-a-Service，BDaaS）场景下实际落地，原因在于这些方法通常依赖不切实际的先验信息（如下游干净数据、已知触发器或目标输出），且缺乏针对不同后门模型的可复用、可扩展净化能力。
 
-  摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容摘要内容
+本文提出后门净化框架ProtoPurify，在极少先验假设的条件下通过参数编辑实现高效后门净化。ProtoPurify首先从干净模型与后门模型的参数差值中构建后门向量池，通过聚合操作生成候选原型向量，并利用余弦相似度匹配为目标后门模型选择最优原型。随后，该方法通过逐层原型对齐分析检测边界层，并在候选层中抑制与原型对齐的参数分量，从而在最小化良性性能损失的前提下实现精细化的后门行为净化。作为面向BDaaS的服务化原语，ProtoPurify原生支持可复用性、可定制化、可解释性和运行时高效性四大核心特性。
+
+在多种大语言模型上针对分类与生成任务的实验表明，ProtoPurify在面对6种多样化攻击（包括单触发器、多触发器和无触发器后门设置）时，始终优于6种代表性防御方法。ProtoPurify能够将攻击成功率（ASR）降低至10\%以下，部分情况下甚至低至1.6\%，同时干净数据准确率（CDA）损失不超过3\%。此外，ProtoPurify在未见数据集和未知攻击类型上具备良好的泛化能力，对自适应后门变体具有较强的鲁棒性，且在无后门模型上能够保持稳定性能。
+
 \end{cnabstract}
 \newpage
 
 \phantomsection
 \addcontentsline{toc}{chapter}{ABSTRACT}
 
-\begin{enabstract}{Key1; Key2; Key3}
+\begin{enabstract}{Large Language Model; Backdoor Attack; Backdoor Purification; Defense-as-a-Service; Prototype Representation; Weight Space}
 
-  Please use English semicolon and space to separate key words.
+Large language models (LLMs) are increasingly deployed in security-sensitive applications, yet remain vulnerable to backdoor attacks. However, existing backdoor defenses are difficult to operationalize for Backdoor Defense-as-a-Service (BDaaS), as they require unrealistic side information (e.g., downstream clean data, known triggers/targets, or task domain specifics), and lack reusable, scalable purification across diverse backdoored models.
 
-  This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. This is abstract. 
+In this paper, we present ProtoPurify, a backdoor purification framework via parameter edits under minimal assumptions. ProtoPurify first builds a backdoor vector pool from clean and backdoored model pairs, aggregates vectors into candidate prototypes, and selects the most aligned candidate for the target model via cosine similarity matching. ProtoPurify then identifies a boundary layer through layer-wise prototype alignment and performs targeted purification by suppressing prototype-aligned components in the affected layers, achieving fine-grained mitigation with minimal impact on benign utility. Designed as a BDaaS-ready primitive, ProtoPurify supports reusability, customizability, interpretability, and runtime efficiency.
+
+Experiments across various LLMs on both classification and generation tasks show that ProtoPurify consistently outperforms 6 representative defenses against 6 diverse attacks, including single-trigger, multi-trigger, and triggerless backdoor settings. ProtoPurify reduces the attack success rate (ASR) to below 10\%, and even as low as 1.6\% in some cases, while incurring less than a 3\% drop in clean data accuracy (CDA). Furthermore, ProtoPurify generalizes effectively to held-out datasets and previously unseen backdoor attacks, remains robust to adaptive backdoor variants, and preserves stability on non-backdoored models.
+
 \end{enabstract}
 \newpage
