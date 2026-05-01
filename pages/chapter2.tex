@@ -4,7 +4,7 @@
 
 \section{大语言模型}
 
-大语言模型（Large Language Models，LLMs）是基于Transformer架构的深度学习模型，利用自注意力机制捕获序列内的复杂依赖关系，能够处理和生成类人文本。以GPT-3\cite{brown2020gpt3}、GPT-4\cite{achiam2023gpt4}、Llama 3\cite{dubey2024llama3}和Mistral\cite{jiang2023mistral}为代表的大语言模型在文本生成、机器翻译、对话系统等任务上展现出卓越性能，已在金融、医疗、教育等多个行业实现大规模应用。
+大语言模型（Large Language Models，LLMs）是基于Transformer架构的深度学习模型，利用自注意力机制捕获序列内的复杂依赖关系，能够处理和生成类人文本。以GPT\cite{achiam2023gpt4}、Llama\cite{dubey2024llama3}和Mistral\cite{jiang2023mistral}为代表的大语言模型在文本生成、机器翻译、对话系统等任务上展现出卓越性能，已在金融、医疗、教育等多个行业实现大规模应用。
 
 大语言模型的训练通常包含预训练和微调两个阶段。
 
@@ -12,11 +12,11 @@
 
 在预训练阶段，模型通过因果语言建模目标（Causal Language Modeling）\cite{vaswani2017attention}在大规模语料库上学习通用的语言表示，即最大化序列中下一个词元的条件概率：
 \begin{equation}
-L_{\text{causal}} = - \sum_{i=1}^{N} \log P(x_i \mid x_{<i}; \theta)
+L_{\text{causal}} = - \sum_{i=1}^{N} \log P(x_i \mid x_{<i}; \theta) ,
 \end{equation}
 其中$x_i$表示第$i$个词元，$x_{<i}$表示其前驱词元序列，$\theta$为模型参数。预训练过程的核心是自注意力机制，该机制通过计算查询、键和值矩阵之间的相似度来捕获词元间的关联：
 \begin{equation}
-\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V ,
 \end{equation}
 其中$Q$、$K$、$V$分别为查询、键和值矩阵，$d_k$为键向量的维度。
 
@@ -60,8 +60,9 @@ L_{\text{causal}} = - \sum_{i=1}^{N} \log P(x_i \mid x_{<i}; \theta)
 
 \subsection{基于嵌入的防御}
 
+{\sloppy 
 基于嵌入的防御（Embedding-based Defense）在表示空间而非直接在模型权重中运作，核心直觉在于后门行为在嵌入空间中表现为异常方向。BEEAR\cite{zeng2024beear}通过对抗性操控嵌入表示来识别和消除指令微调大语言模型中的安全后门；CROW\cite{min2024crow}利用后门触发器引发异常逐层表示不稳定性的观察，在小型干净提示集上进行带内部一致性正则化器的轻量微调，无需触发器知识或干净参考模型。
-
+\par}
 然而，上述净化方法要么依赖不切实际的先验信息，要么缺乏可复用的净化机制，限制了其在BDaaS场景中的实用性。
 
 \section{权重空间表示}
@@ -72,7 +73,7 @@ L_{\text{causal}} = - \sum_{i=1}^{N} \log P(x_i \mid x_{<i}; \theta)
 
 Ilharco等人\cite{ilharco2023taskv}将模型在微调前后的参数差值形式化为\textbf{任务向量}（Task Vector）：令$\tau = \theta_{\text{fine-tuned}} - \theta_{\text{base}}$，这些向量展现出近似线性的代数性质，可以被加减以组合行为，或取反以抑制特定能力。任务向量还支持类比迁移——令$\Delta_{A \to B} = \theta_B - \theta_A$，将其应用于另一个模型$\theta_C$可得：
 \begin{equation}
-\theta_D \approx \theta_C + \Delta_{A \to B}
+\theta_D \approx \theta_C + \Delta_{A \to B} \, .
 \end{equation}
 即使未在目标任务上进行训练，也能实现一定程度的能力迁移。这一发现表明，有意义的模型行为变化可以通过权重空间中的向量运算来捕获和迁移。
 

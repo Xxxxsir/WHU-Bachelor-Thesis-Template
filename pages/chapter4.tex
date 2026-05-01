@@ -24,23 +24,25 @@
 
 本文针对6种代表性后门攻击评估ProtoPurify，涵盖三种攻击类别：
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{单触发器}：BadNet（基于词元的中毒攻击）、BadEdit（基于权重编辑的攻击）、AutoPoison（基于指令调优的自动中毒）
-    \item \textbf{多触发器}：CBA（复合后门攻击，触发器分散于多个提示片段）
-    \item \textbf{无触发器}：DTBA（分布式触发器后门攻击）、VPI（虚拟提示注入）
+    \item \textbf{单触发器}：BadNet（基于词元的中毒攻击）、BadEdit（基于权重编辑的攻击）
+    \item \textbf{多触发器}：CBA（复合后门攻击，触发器分散于多个提示片段）、DTBA（分布式触发器后门攻击）
+    \item \textbf{无触发器}：AutoPoison（基于指令调优的自动化投毒）、VPI（虚拟提示注入）
 \end{itemize}
 
+{\sloppy 
 值得注意的是，在后门向量池的构建中，仅使用BadNet作为模拟攻击（表~\ref{tab:triggers}中的触发器1），其余5种攻击在净化中完全未见，用于评估ProtoPurify对未知攻击的泛化能力。
+\par}
 
 \subsection{基线防御方法}
 
 本文与6种代表性防御方法进行比较：
 \begin{itemize}[leftmargin=2em]
-    \item \textbf{WAN（Wanda）}：训练无关的轻量级基线，通过激活感知重要性分数进行参数剪枝
-    \item \textbf{F/T（Fine-Tuning）}：在干净数据上重新训练以覆盖后门行为
-    \item \textbf{NAD（Neural Attention Distillation）}：基于蒸馏的微调策略
-    \item \textbf{BEE（BEEAR）}：通过对抗性嵌入操控消除安全后门
-    \item \textbf{CROW}：通过内部一致性正则化实现轻量微调
-    \item \textbf{LET（LETHE）}：通过知识稀释和轻量模型合并实现净化
+    \item \textbf{WAN（Wanda）}：无训练的轻量级基线，通过激活感知重要性分数进行参数剪枝。
+    \item \textbf{F/T（Fine-Tuning）}：在干净数据上重新训练以覆盖后门行为。
+    \item \textbf{NAD（Neural Attention Distillation）}：基于蒸馏的微调策略。
+    \item \textbf{BEE（BEEAR）}：通过对抗性嵌入操控消除安全后门。
+    \item \textbf{CROW}：通过内部一致性正则化实现轻量微调。
+    \item \textbf{LET（LETHE）}：通过知识稀释和轻量模型合并实现净化。
 \end{itemize}
 
 \subsection{评估指标}
@@ -49,12 +51,12 @@
 
 \textbf{攻击成功率（Attack Success Rate，ASR）}：衡量含触发器输入成功诱导模型输出攻击者目标标签的比例：
 \begin{equation}
-\text{ASR} = \frac{1}{N_t}\sum_{i=1}^{N_t} \mathbb{1}\left[f(x_i^{\text{trigger}}) = y_t\right]
+\text{ASR} = \frac{1}{N_t}\sum_{i=1}^{N_t} \mathds{1}\left[f(x_i^{\text{trigger}}) = y_t\right] \, .
 \end{equation}
 
 \textbf{干净数据准确率（Clean Data Accuracy，CDA）}：评估模型在无触发器输入上的准确率，反映净化后模型保留原有效用的程度：
 \begin{equation}
-\text{CDA} = \frac{1}{N_c}\sum_{i=1}^{N_c} \mathbb{1}\left[f(x_i^{\text{clean}}) = y_i\right]
+\text{CDA} = \frac{1}{N_c}\sum_{i=1}^{N_c} \mathds{1}\left[f(x_i^{\text{clean}}) = y_i\right] \, .
 \end{equation}
 
 有效的后门净化方法应显著降低ASR，同时维持高CDA值。
@@ -78,6 +80,48 @@
         触发器5 & 在输入末尾（后缀位置）插入单一触发器 \\
         \bottomrule
     \end{tabularx}
+\end{table}
+
+\subsection{实验超参数设置}
+
+表~\ref{tab:hyperparams}列出了ProtoPurify在各实验场景中使用的超参数设置。
+
+\begin{table}[htbp]
+    \centering
+    \caption{ProtoPurify超参数设置}
+    \label{tab:hyperparams}
+    \begin{tabular}{lcc}
+        \toprule
+        超参数 & 含义 & 默认值 \\
+        \midrule
+        $m$ & 用于计算基线统计的低层数量 & 10 \\
+        $\kappa$ & 幅度显著性判定倍数 & 2.0 \\
+        $\epsilon$ & 增量显著性判定倍数 & 1.5 \\
+        $\eta$ & 后门信号选择阈值倍数 & 1.0 \\
+        $\alpha$ & 净化抑制强度 & 0.8 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{辅助数据集详情}
+
+后门向量池构建所使用的辅助数据集均来自GLUE基准，各数据集的基本统计信息如表~\ref{tab:auxdata}所示。
+
+\begin{table}[htbp]
+    \centering
+    \caption{辅助数据集基本统计信息}
+    \label{tab:auxdata}
+    \begin{tabular}{lccc}
+        \toprule
+        数据集 & 任务类型 & 类别数 & 训练样本数 \\
+        \midrule
+        SST-2   & 情感分类 & 2 & 67,349 \\
+        CoLA    & 语法可接受性 & 2 & 8,551 \\
+        QQP     & 释义检测 & 2 & 363,849 \\
+        MNLI    & 自然语言推理 & 3 & 392,702 \\
+        Emotion & 情感识别 & 6 & 16,000 \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
 \section{分类任务主要实验结果}
@@ -217,33 +261,37 @@
 表~\ref{tab:gen}展示了ProtoPurify在Chat-Backdoor生成基准上针对DTBA、AutoPoison和VPI三种攻击的实验结果。
 
 \begin{table}[htbp]
-\centering
-\caption{生成任务实验结果。}
-\label{tab:gen}
-\begin{tabularx}{\textwidth}{llcCCCCCCCC}
-\toprule
-\multicolumn{2}{c}{} & 指标 & 后门模型 & WAN & F/T & NAD & BEE & CROW & LET & \textbf{Proto} \\
-\midrule
-\multirow{6}{*}{\rotatebox{90}{Llama3-8B}}
- & \multirow{2}{*}{DTBA}       & ASR & 0.595 & 0.695 & 0.100 & 0.490 & 0.105 & 0.035 & 0.255 & \textbf{0.085} \\
- &                              & CDA & 0.810 & 0.330 & 0.880 & 0.820 & 0.790 & 0.490 & 0.820 & \textbf{0.805} \\
- & \multirow{2}{*}{AutoPoison} & ASR & 0.800 & 0.067 & 0.210 & 0.618 & 0.050 & 0.227 & 0.143 & \textbf{0.065} \\
- &                              & CDA & 0.999 & 0.572 & 0.908 & 0.905 & 0.950 & 0.806 & 0.921 & \textbf{0.955} \\
- & \multirow{2}{*}{VPI}        & ASR & 0.990 & 0.230 & 0.190 & 0.105 & 0.095 & 0.150 & 0.120 & \textbf{0.080} \\
- &                              & CDA & 0.975 & 0.275 & 0.795 & 0.890 & 0.925 & 0.820 & 0.870 & \textbf{0.945} \\
-\midrule
-\multirow{6}{*}{\rotatebox{90}{Mistral-7B}}
- & \multirow{2}{*}{DTBA}       & ASR & 0.770 & 0.735 & 0.130 & 0.765 & 0.050 & 0.525 & 0.685 & \textbf{0.060} \\
- &                              & CDA & 0.550 & 0.290 & 0.960 & 0.590 & 0.830 & 0.720 & 0.590 & \textbf{0.875} \\
- & \multirow{2}{*}{AutoPoison} & ASR & 0.827 & 0.775 & 0.083 & 0.814 & 0.110 & 0.266 & 0.062 & \textbf{0.080} \\
- &                              & CDA & 0.999 & 0.901 & 0.824 & 0.906 & 0.960 & 0.835 & 0.890 & \textbf{0.960} \\
- & \multirow{2}{*}{VPI}        & ASR & 1.000 & 0.560 & 0.092 & 0.902 & 0.280 & 0.255 & 0.325 & \textbf{0.090} \\
- &                              & CDA & 0.990 & 0.735 & 0.750 & 0.935 & 0.920 & 0.785 & 0.885 & \textbf{0.950} \\
-\bottomrule
-\end{tabularx}
-\end{table}
+    \centering
+    \caption{生成任务实验结果。}
+    \label{tab:gen}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{llcccccccccc}
+    \toprule
+    \multicolumn{2}{c}{} & 指标 & 后门模型 & WAN & F/T & NAD & BEE & CROW & LET & \textbf{PROTOPURIFY} \\
+    \midrule
+    \multirow{6}{*}{\rotatebox{90}{Llama3-8B}}
+     & \multirow{2}{*}{DTBA}       & ASR & 0.595 & 0.695 & 0.100 & 0.490 & 0.105 & 0.035 & 0.255 & \textbf{0.085} \\
+     &                              & CDA & 0.810 & 0.330 & 0.880 & 0.820 & 0.790 & 0.490 & 0.820 & \textbf{0.805} \\
+     & \multirow{2}{*}{AutoPoison} & ASR & 0.800 & 0.067 & 0.210 & 0.618 & 0.050 & 0.227 & 0.143 & \textbf{0.065} \\
+     &                              & CDA & 0.999 & 0.572 & 0.908 & 0.905 & 0.950 & 0.806 & 0.921 & \textbf{0.955} \\
+     & \multirow{2}{*}{VPI}        & ASR & 0.990 & 0.230 & 0.190 & 0.105 & 0.095 & 0.150 & 0.120 & \textbf{0.080} \\
+     &                              & CDA & 0.975 & 0.275 & 0.795 & 0.890 & 0.925 & 0.820 & 0.870 & \textbf{0.945} \\
+    \midrule
+    \multirow{6}{*}{\rotatebox{90}{Mistral-7B}}
+     & \multirow{2}{*}{DTBA}       & ASR & 0.770 & 0.735 & 0.130 & 0.765 & 0.050 & 0.525 & 0.685 & \textbf{0.060} \\
+     &                              & CDA & 0.550 & 0.290 & 0.960 & 0.590 & 0.830 & 0.720 & 0.590 & \textbf{0.875} \\
+     & \multirow{2}{*}{AutoPoison} & ASR & 0.827 & 0.775 & 0.083 & 0.814 & 0.110 & 0.266 & 0.062 & \textbf{0.080} \\
+     &                              & CDA & 0.999 & 0.901 & 0.824 & 0.906 & 0.960 & 0.835 & 0.890 & \textbf{0.960} \\
+     & \multirow{2}{*}{VPI}        & ASR & 1.000 & 0.560 & 0.092 & 0.902 & 0.280 & 0.255 & 0.325 & \textbf{0.090} \\
+     &                              & CDA & 0.990 & 0.735 & 0.750 & 0.935 & 0.920 & 0.785 & 0.885 & \textbf{0.950} \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \end{table}
 
+{\sloppy 
 值得注意的是，生成任务的评估基于在分类任务上构建的原型，验证了ProtoPurify跨任务领域的迁移能力。对于DTBA攻击，ProtoPurify将ASR从59.5\%/77.0\%降至8.5\%/6.0\%（Llama3-8B/Mistral-7B），同时CDA保持在80.5\%/87.5\%。在AutoPoison和VPI攻击上，ProtoPurify同样取得最低ASR和最高CDA的组合。
+\par}
 
 \section{消融实验}
 
@@ -295,7 +343,9 @@
 \end{tabular}}
 \end{table}
 
+{\sloppy 
 总体而言，较简单的AM聚合始终优于PCA。AM方法将ASR平均降至9.7\%/9.8\%，同时CDA保持在78.1\%/88.4\%；而PCA方法的ASR较高（17.0\%/17.2\%），CDA也有更大幅度的下降。这一性能差距可能源于PCA的目标不匹配：PCA识别使后门向量方差最大化的方向，但这不一定与共享的后门相关信号对齐。此外，PCA在均值中心化向量上操作，去除了对边界层检测和模型净化至关重要的一致均值偏移信号。因此，本文采用AM作为默认聚合函数。
+\par}
 
 \subsection{边界层选择的影响}
 
@@ -303,7 +353,7 @@
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox[c][5cm][c]{12cm}{\centering\heiti\zihao{4}（图3：边界层选择影响分析图，待插入）}}
+    \includegraphics[width=0.95\textwidth]{figures/layer_metric_figure.pdf}
     \caption{不同边界层选择对净化性能（1-ASR和CDA）的影响。星号标记本文方法自动选择的边界层。}
     \label{fig:boundary}
 \end{figure}
@@ -426,7 +476,7 @@ ProtoPurify在两个数据集上均仅引入可忽略不计的CDA变化。在无
 
     \item \textbf{鲁棒性}：在原型未泄露和原型已泄露两种自适应攻击场景下，ASR均保持在10\%以下。
 
-    \item \textbf{安全性}：在干净模型上应用ProtoPurify仅引入极小的性能变化，满足BDaaS"安全优先"的要求。
+    \item \textbf{安全性}：{\sloppy 在干净模型上应用ProtoPurify仅引入极小的性能变化，满足BDaaS``安全优先"的要求。\par}
 \end{enumerate}
 
 \subsection{全文结论}

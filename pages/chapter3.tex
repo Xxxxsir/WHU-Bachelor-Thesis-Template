@@ -1,6 +1,6 @@
 % 第三章：ProtoPurify方法
 
-\chapter{ProtoPurify方法设计}
+\chapter{后门进化框架ProtoPurify设计}
 
 \section{威胁模型}
 
@@ -29,7 +29,7 @@
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox[c][5cm][c]{12cm}{\centering\heiti\zihao{4}（图1：后门向量间余弦相似度分布图，待插入）}}
+    \includegraphics[width=0.95\textwidth]{figures/cosine_similarity_figure.png}
     \caption{后门向量之间（B vs B）及后门向量与干净向量之间（B vs C）的余弦相似度分布。后门向量从5种触发器类型和4种不同攻击中提取。}
     \label{fig:motivation}
 \end{figure}
@@ -40,7 +40,7 @@ ProtoPurify由四个主要阶段组成，整体工作流程如图~\ref{fig:overv
 
 \begin{figure}[htbp]
     \centering
-    \fbox{\parbox[c][6cm][c]{14cm}{\centering\heiti\zihao{4}（图2：ProtoPurify整体框架图，待插入）}}
+    \includegraphics[width=0.95\textwidth]{figures/overview.png}
     \caption{ProtoPurify整体框架示意图。阶段一：通过模拟不同后门场景，从干净模型与后门模型的权重差值中提取后门向量；阶段二：将向量聚合为候选原型，并为目标后门模型选择最匹配的原型；阶段三：通过逐层原型对齐检测边界层；阶段四：在候选层中抑制与原型对齐的分量以完成净化。}
     \label{fig:overview}
 \end{figure}
@@ -70,14 +70,14 @@ ProtoPurify由四个主要阶段组成，整体工作流程如图~\ref{fig:overv
 
 获得$M_b^{(i)}$和$M_c^{(i)}$后，分别计算两者相对于基础模型$M_{\text{base}}$的恶意任务向量$v_b^{(i)}$和良性任务向量$v_c^{(i)}$：
 \begin{equation}
-v_b^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}})
+v_b^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}}) \, ,
 \end{equation}
 \begin{equation}
-v_c^{(i)} = \vartheta_{\mathcal{I}}(M_c^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}})
+v_c^{(i)} = \vartheta_{\mathcal{I}}(M_c^{(i)}) - \vartheta_{\mathcal{I}}(M_{\text{base}}) \, ,
 \end{equation}
 其中$\vartheta_{\mathcal{I}}(\cdot)$表示提取并展平索引集$\mathcal{I}$所指定参数的函数（$\mathcal{I}$由目标后门模型的微调方案确定，参数未更新的模块被排除在外）。后门向量$v^{(i)}$定义为两者之差：
 \begin{equation}
-v^{(i)} = v_b^{(i)} - v_c^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_c^{(i)})
+v^{(i)} = v_b^{(i)} - v_c^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta_{\mathcal{I}}(M_c^{(i)}) \, .
 \end{equation}
 
 此减法操作的关键作用在于：去除$v_b^{(i)}$中与后门注入无关的任务特定学习信号，使得$v^{(i)}$能够更纯粹地捕获后门引发的权重变化。在多种场景下重复上述过程，得到后门向量池$\mathcal{V} = \{v^{(i)}\}_{i=1}^{N}$。
@@ -108,13 +108,13 @@ v^{(i)} = v_b^{(i)} - v_c^{(i)} = \vartheta_{\mathcal{I}}(M_b^{(i)}) - \vartheta
 
 \textbf{算术均值（AM）}：将子集$\mathcal{U}$中所有向量取平均：
 \begin{equation}
-f_{\text{AM}}(\mathcal{U}) = \frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} v
+f_{\text{AM}}(\mathcal{U}) = \frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} v \, ,
 \end{equation}
 该平均操作强化了跨后门攻击一致的参数变化，同时削减各场景特有的随机变化。
 
 \textbf{主成分分析（PCA）}：对$\mathcal{U}$中的后门向量应用主成分分析，提取最大化方差的主方向$\mathbf{u}_1$，并用后门向量$\ell_2$范数的平均值进行尺度校正：
 \begin{equation}
-f_{\text{PCA}}(\mathcal{U}) = \left(\frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} \|v\|_2\right) \mathbf{u}_1
+f_{\text{PCA}}(\mathcal{U}) = \left(\frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal{U}} \|v\|_2\right) \mathbf{u}_1 \, .
 \end{equation}
 
 \subsection{原型选择}
@@ -123,7 +123,7 @@ f_{\text{PCA}}(\mathcal{U}) = \left(\frac{1}{|\mathcal{U}|} \sum_{v \in \mathcal
 
 给定目标后门模型$M'$，计算其相对于基础模型的权重差值向量$\mathbf{w} = \vartheta_{\mathcal{I}}(M') - \vartheta_{\mathcal{I}}(M_{\text{base}})$，然后通过余弦相似度匹配选择最优原型：
 \begin{equation}
-p^* = \arg\max_{p \in \mathcal{P}} \text{CosSim}(\mathbf{w}, p)
+p^* = \arg\max_{p \in \mathcal{P}} \text{CosSim}(\mathbf{w}, p) \, ,
 \end{equation}
 所选原型$p^*$将在后续阶段用于净化目标后门模型$M'$。
 
@@ -156,7 +156,7 @@ $p^* \leftarrow \arg\max_{p \in \mathcal{P}} \text{CosSim}(\mathbf{w}, p)$\;
 
 对于目标后门模型，逐层计算权重差值向量$\mathbf{w}$与原型$p^*$的对齐分数：
 \begin{equation}
-s_l = |\text{CosSim}(\mathbf{w}_l, p_l^*)| , \quad l = 1, \ldots, L
+s_l = |\text{CosSim}(\mathbf{w}_l, p_l^*)| , \quad l = 1, \ldots, L \, ,
 \end{equation}
 其中$\mathbf{w}_l$和$p_l^*$分别表示向量$\mathbf{w}$和$p^*$在第$l$层的分量。经验上，$s_l$在较低层较为稳定，在较深层则出现明显上升的突变，表明后门表示强度的转变。
 
@@ -166,13 +166,13 @@ s_l = |\text{CosSim}(\mathbf{w}_l, p_l^*)| , \quad l = 1, \ldots, L
 
 \textbf{幅度显著性（Magnitude Significance）}：对齐分数显著高于较低层建立的稳定基线：
 \begin{equation}
-s_{l^*} \geq \mu_m + \kappa \cdot \sigma_m
+s_{l^*} \geq \mu_m + \kappa \cdot \sigma_m \, ,
 \end{equation}
 其中$\mu_m$和$\sigma_m$分别为最低$m$层对齐分数的均值和标准差，$\kappa$为幅度超参数。
 
 \textbf{增量显著性（Increment Significance）}：对齐分数的增幅显著陡于较低层：
 \begin{equation}
-\Delta s_{l^*} \geq \epsilon \cdot \sigma_m
+\Delta s_{l^*} \geq \epsilon \cdot \sigma_m \, ,
 \end{equation}
 其中$\Delta s_l = s_l - s_{l-1}$（$l \geq 2$），$\epsilon$为增量超参数。
 
@@ -203,13 +203,13 @@ $l^* \leftarrow \min\{l : s_l \geq \mu_m + \kappa \sigma_m \wedge \Delta s_l \ge
 
 给定识别出的原型向量$p^*$和边界层$l^*$，对目标模型$M'$中位于$l \geq l^*$各层的每个可训练权重矩阵$W'$进行净化。首先计算权重更新矩阵：
 \begin{equation}
-\Delta W = W' - W_{\text{base}}
+\Delta W = W' - W_{\text{base}} \, ,
 \end{equation}
 其中$W_{\text{base}}$为基础模型$M_{\text{base}}$中的对应矩阵。将原型向量$p^*$中对应$W'$的条目映射回矩阵空间，得到与$\Delta W$形状相同的原型矩阵$\Delta P$（具体地，对$W'_{i,j}$在$\mathcal{I}$中位置为$z$的条目，$\Delta P_{i,j} = p^*[z]$）。
 
 对$\Delta W$进行奇异值分解（SVD）以解耦其中编码的潜在结构：
 \begin{equation}
-\Delta W = U\Sigma V^\top = \sum_{i=1}^{r} \lambda_i \mathbf{a}_i \mathbf{b}_i^\top
+\Delta W = U\Sigma V^\top = \sum_{i=1}^{r} \lambda_i \mathbf{a}_i \mathbf{b}_i^\top \, ,
 \end{equation}
 其中$r$为矩阵秩，每个秩-1分量$\mathbf{a}_i\mathbf{b}_i^\top$代表$\Delta W$中的一个独立信息通道。
 
@@ -217,13 +217,13 @@ $l^* \leftarrow \min\{l : s_l \geq \mu_m + \kappa \sigma_m \wedge \Delta s_l \ge
 
 对每个奇异值分量$\mathbf{a}_i\mathbf{b}_i^\top$，通过将其投影到原型矩阵$\Delta P$来评估其后门信号强度：
 \begin{equation}
-c_i = |\langle \Delta P, \mathbf{a}_i\mathbf{b}_i^\top \rangle_F|
+c_i = |\langle \Delta P, \mathbf{a}_i\mathbf{b}_i^\top \rangle_F| \, ,
 \end{equation}
 其中$\langle \cdot, \cdot \rangle_F$表示Frobenius内积（等价于$|\text{tr}(\Delta P^\top \mathbf{a}_i\mathbf{b}_i^\top)|$）。分数较高的分量与后门原型高度对齐，被认为与后门行为高度相关。
 
 采用自适应阈值选择与原型对齐的恶意分量：
 \begin{equation}
-\tau = \mu + \eta \cdot \sigma
+\tau = \mu + \eta \cdot \sigma \, ,
 \end{equation}
 其中$\mu$和$\sigma$为$\{c_i\}_{i=1}^r$的均值和标准差，$\eta$控制幅度敏感度。分数超过$\tau$的分量被收集到索引集$\mathcal{I}_\tau$。
 
@@ -232,13 +232,13 @@ c_i = |\langle \Delta P, \mathbf{a}_i\mathbf{b}_i^\top \rangle_F|
 对识别出的恶意分量，通过校准其奇异值进行可控抑制（而非硬性删除）：
 \begin{equation}
 \label{eq:singular_calibrate}
-\lambda_i^* = \begin{cases} \lambda_i \cdot (1 - \alpha), & i \in \mathcal{I}_\tau \\ \lambda_i, & i \notin \mathcal{I}_\tau \end{cases}
+\lambda_i^* = \begin{cases} \lambda_i \cdot (1 - \alpha), & i \in \mathcal{I}_\tau \\ \lambda_i, & i \notin \mathcal{I}_\tau \end{cases} \, ,
 \end{equation}
 其中$\alpha \in [0, 1]$控制净化强度。$\alpha = 1$实现完全消除，较小的值则实现后门抑制与模型效用之间的可控权衡。
 
 校准后，所有分量重新聚合以重建净化后的参数矩阵：
 \begin{equation}
-W^* = W_{\text{base}} + \sum_{i=1}^{r} \lambda_i^* \mathbf{a}_i \mathbf{b}_i^\top
+W^* = W_{\text{base}} + \sum_{i=1}^{r} \lambda_i^* \mathbf{a}_i \mathbf{b}_i^\top \, .
 \end{equation}
 对$l \geq l^*$各层的所有可训练权重矩阵重复上述过程，最终得到净化模型$M^*$。
 
